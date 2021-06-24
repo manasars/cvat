@@ -324,6 +324,9 @@ export class Canvas3dModelImpl extends MasterImpl implements Canvas3dModel {
     }
 
     public configureShapes(shapeProperties: ShapeProperties): void {
+        this.data.drawData.enabled = false;
+        this.data.mode = Mode.IDLE;
+        this.cancel();
         this.data.shapeProperties = {
             ...shapeProperties,
         };
