@@ -218,7 +218,7 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
                     }),
                 );
             }
-            if (this.model.mode === Mode.DRAW) {
+            if (this.model.mode === Mode.DRAW && e.ctrlKey && this.model.data.drawData.initialState) {
                 const { x, y, z } = this.cube.perspective.position;
                 const { x: width, y: height, z: depth } = this.cube.perspective.scale;
                 const { x: rotationX, y: rotationY, z: rotationZ } = this.cube.perspective.rotation;
@@ -340,6 +340,7 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
             const points = [x, y, z, rotationX, rotationY, rotationZ, width, height, depth, 0, 0, 0, 0, 0, 0, 0];
             const initState = this.model.data.drawData.initialState;
             let label;
+
             if (initState) {
                 ({ label } = initState);
             }
@@ -767,6 +768,10 @@ export class Canvas3dViewImpl implements Canvas3dView, Listener {
     public notify(model: Canvas3dModel & Master, reason: UpdateReasons): void {
         if (reason === UpdateReasons.IMAGE_CHANGED) {
             if (!model.data.image) return;
+            this.dispatchEvent(new CustomEvent('canvas.canceled'));
+            if (this.model.mode === Mode.DRAW){
+                this.model.data.drawData.enabled  = false
+            }
             this.views.perspective.renderer.dispose();
             this.model.mode = Mode.BUSY;
             this.action.loading = true;
